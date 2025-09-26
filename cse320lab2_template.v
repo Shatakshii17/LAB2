@@ -148,17 +148,34 @@ module lab2bcd_1digit(D, ENABLE, LOAD, UP, CLK, CLR, Q, CO);
     //Synchronous counter
     //This implementation assumes it will be used in a 2-digit BCD
     //Additional logic will be implemented in the top-level module (2-digit BCD) to prevent it from going below 0 or above 99
-    always @(???)
+	always @(posedge CLK)
     begin
         //Asynchronous active-low clear
         if(~CLR)
         begin
-            Q <= ???;
+            Q <= 4'd0;
         end
         //Implement the behavioral requirements for Q here
         else if(ENABLE)
         begin
-            ???
+			if (LOAD) 
+			begin
+				Q <= D;
+			end
+			else if(UP)
+			begin
+				case(Q):
+					4'd9: Q <= 4'd0;
+					default: Q <= Q + 4'd1;
+				endcase
+			end
+			else
+			begin
+				case(Q)
+					4'd0: Q <= 4'd9;
+					default: Q <= Q - 4'd1;
+				endcase
+			end
         end
     end
     
@@ -252,6 +269,7 @@ module lab2bcd_1digit_top(D, ENABLE, LOAD, UP, CLK100MHZ, CLR, Q, CO);
     simpleDivider clkdiv(???, CLK, CLR); //Read the simpleDivider module to see what it takes as an input
     lab2bcd_1digit BCD1(???);
 endmodule
+
 
 
 

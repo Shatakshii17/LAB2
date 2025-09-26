@@ -1,0 +1,35 @@
+# CSE 320 LAB 2 - Gitignore for Verilog Project
+
+# Compiled simulation files
+sim/*_sim
+sim/*.vcd
+sim/*.lxt
+sim/*.lx2
+sim/*.fst
+
+# Temporary files
+*.tmp
+*~
+.DS_Store
+
+# Build artifacts
+*.o
+*.a
+*.so
+*.dll
+*.exe
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Keep sim directory but ignore contents
+!sim/.gitkeep

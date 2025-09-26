@@ -87,7 +87,6 @@ module lab2fsm_behavioral(X, CLK, RST, S, V);
 endmodule
 
 
-//Problem 1 testbench
 module lab2fsm_tb();
     //inputs
     reg X, CLK, RST;
@@ -95,28 +94,49 @@ module lab2fsm_tb();
     //outputs
     wire S, V;
     
-    //instantiate module(s) under test
-    ???
+    //instantiate module under test
+    lab2fsm_behavioral UUT (
+        .X(X),
+        .CLK(CLK),
+        .RST(RST),
+        .S(S),
+        .V(V)
+    );
     
-    //clock generation, provided from lecture slides
+    //clock generation
     initial
     begin
         CLK = 0;
         forever 
         begin
-            #5 CLK = ~CLK; //Clock period is 10 ns, so it "flips" every 5 ns
+            #5 CLK = ~CLK; //Clock period is 10 ns
         end
     end
     
-    //intiialization/reset and perform test cases
+    //initialization/reset and perform test cases
     initial
-    begin //Due to negedge RST, start with RST = 1 first
-        RST = 0; #10; RST = 1; #35; RST = 0; #2.5; //Perform reset, wait at least 3 cycles (#35), add some delay padding to align X after rising edge
-        X = 1; #10; X= 0; #10; X=1; #10; X=1; #10; //1101
-     	//??? Do the same for 1100 and 1011, no need to reset
+    begin
+        // Monitor outputs
+        $monitor("Time: %0t, RST: %b, X: %b, State: %d, S: %b, V: %b", 
+                 $time, RST, X, UUT.Q, S, V);
+        
+        //Reset sequence
+        RST = 0; #10; RST = 1; #35; RST = 0; #2.5;
+        
+        // Test sequence X = 1011 1100 1101 (from problem description)
+        // This represents: 11 (binary) -> 14 (decimal) -> should output Excess-3
+        X = 1; #10; X = 0; #10; X = 1; #10; X = 1; #10; // 1011
+        
+        // Test sequence 1100 
+        X = 1; #10; X = 1; #10; X = 0; #10; X = 0; #10; // 1100
+        
+        // Test sequence 1101
+        X = 1; #10; X = 1; #10; X = 0; #10; X = 1; #10; // 1101
+        
+        #50;
+        $finish;
     end
 endmodule
-
 //Problem 2a
 module lab2bcd_1digit(D, ENABLE, LOAD, UP, CLK, CLR, Q, CO);
 	input [3:0] D;
@@ -232,6 +252,7 @@ module lab2bcd_1digit_top(D, ENABLE, LOAD, UP, CLK100MHZ, CLR, Q, CO);
     simpleDivider clkdiv(???, CLK, CLR); //Read the simpleDivider module to see what it takes as an input
     lab2bcd_1digit BCD1(???);
 endmodule
+
 
 
 

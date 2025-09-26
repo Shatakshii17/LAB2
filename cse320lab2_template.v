@@ -330,25 +330,7 @@ module lab2bcd_2digit(D1, D2, ENABLE, LOAD, UP, CLK, CLR, Q1, Q2, CO);
     
 endmodule
 
-//Clock divider
-module simpleDivider(clk100Mhz, slowClk, CLR);
-    input clk100Mhz; //fast clock
-    output slowClk; //slow clock
-	input CLR;
-    reg [27:0] counter;
-    
-    assign slowClk = counter[27]; //(2^27 / 100E6) = 1.34seconds
-       
-    always @ (posedge clk100Mhz or negedge CLR)
-    begin
-	    if (~CLR) begin
-		    counter <= 0;
-		end else begin
-            counter <= counter + 1; //increment the counter every 10ns (1/100 Mhz) cycle.
-		end
-    end
-endmodule
-
+// Problem 2b testbench
 `timescale 1ns/1ps
 
 module tb_lab2bcd_2digit;
@@ -510,21 +492,123 @@ module tb_lab2bcd_2digit;
 endmodule
 
 		
+//Clock divider
+module simpleDivider(clk100Mhz, slowClk, CLR);
+	input clk100Mhz; //fast clock
+	output slowClk; //slow clock
+		input CLR;
+	reg [27:0] counter;
+	
+	assign slowClk = counter[27]; //(2^27 / 100E6) = 1.34seconds
+	
+	always @ (posedge clk100Mhz or negedge CLR)
+	begin
+		if (~CLR) begin
+			counter <= 0;
+		end else begin
+			counter <= counter + 1; //increment the counter every 10ns (1/100 Mhz) cycle.
+		end
+	end	
+endmodule
+
+//Clock divider
+module simpleDivider(clk100Mhz, slowClk, CLR);
+    input clk100Mhz; //fast clock
+    output slowClk; //slow clock
+	input CLR;
+    reg [27:0] counter;
+    
+    assign slowClk = counter[27]; //(2^27 / 100E6) = 1.34seconds
+       
+    always @ (posedge clk100Mhz or negedge CLR)
+    begin
+	    if (~CLR) begin
+		    counter <= 0;
+		end else begin
+            counter <= counter + 1; //increment the counter every 10ns (1/100 Mhz) cycle.
+		end
+    end
+endmodule
 
 //Problem 3
 module lab2bcd_1digit_top(D, ENABLE, LOAD, UP, CLK100MHZ, CLR, Q, CO);
-    input [3:0] ???;
-    input ???;
+	input [3:0] D;
+    input ENABLE, LOAD, UP, CLK100MHZ, CLR;
     
-    output [3:0] ???;
-    output ???;
+	output [3:0] Q;
+    output CO;
     
     wire CLK;
     
     //module instantiation
-    simpleDivider clkdiv(???, CLK, CLR); //Read the simpleDivider module to see what it takes as an input
-    lab2bcd_1digit BCD1(???);
+	simpleDivider clkdiv(CLK100MHZ, CLK, CLR); //Read the simpleDivider module to see what it takes as an input
+    lab2bcd_1digit BCD1(
+		.D(D),
+		.ENABLE(ENABLE),
+		.LOAD(LOAD),
+		.UP(UP),
+		.CLK(CLK),
+		.CLR(CLR),
+		.Q(Q),
+		.CO(CO)
+	);
 endmodule
+
+// Problem 3 Testbench
+`timescale 1ns/1ps
+
+module lab2bcd_1digit_top_tb;
+  reg  [3:0] D;
+  reg        ENABLE, LOAD, UP, CLK100MHZ, CLR;   // CLR is active-low
+  wire [3:0] Q;
+  wire       CO;
+
+  // DUT
+  lab2bcd_1digit_top UUT (
+    .D(D), .ENABLE(ENABLE), .LOAD(LOAD), .UP(UP),
+    .CLK100MHZ(CLK100MHZ), .CLR(CLR),
+    .Q(Q), .CO(CO)
+  );
+
+  // 100 MHz board clock
+  initial begin
+    CLK100MHZ = 0;
+    forever #5 CLK100MHZ = ~CLK100MHZ;
+  end
+
+  initial begin
+    // init
+    D = 0; ENABLE = 0; LOAD = 0; UP = 1; CLR = 0;
+    #25; CLR = 1;       // release reset (active-low)
+    ENABLE = 1;
+
+    // load 3, then let it count
+    LOAD = 1; D = 4'd3; @(posedge UUT.CLK);
+    LOAD = 0;
+
+    // count up 3 ticks: 3->4->5->6
+    repeat (3) @(posedge UUT.CLK);
+
+    // count down 4 ticks: 6->5->4->3->2
+    UP = 0;
+    repeat (4) @(posedge UUT.CLK);
+
+    // hold state for 2 ticks
+    ENABLE = 0; repeat (2) @(posedge UUT.CLK); ENABLE = 1;
+
+    // back to up for a bit
+    UP = 1; repeat (5) @(posedge UUT.CLK);
+
+    $finish;
+  end
+
+  initial
+    $monitor("t=%0t  CLR=%b EN=%b LD=%b UP=%b  D=%0d | Q=%0d CO=%b",
+             $time, CLR, ENABLE, LOAD, UP, D, Q, CO);
+endmodule
+
+
+
 
 
 

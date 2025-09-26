@@ -75,11 +75,11 @@ endmodule
 
 //Problem 2a
 module lab2bcd_1digit(D, ENABLE, LOAD, UP, CLK, CLR, Q, CO);
-    input [3:0] ???;
-    input ???;
+	input [3:0] D;
+    input ENABLE, LOAD, UP, CLK, CLR;
     
-    output reg [3:0] ???;
-    output reg ???;
+	output reg [3:0] Q;
+    output reg CO;
     
     //Synchronous counter
     //This implementation assumes it will be used in a 2-digit BCD
@@ -188,3 +188,4 @@ module lab2bcd_1digit_top(D, ENABLE, LOAD, UP, CLK100MHZ, CLR, Q, CO);
     simpleDivider clkdiv(???, CLK, CLR); //Read the simpleDivider module to see what it takes as an input
     lab2bcd_1digit BCD1(???);
 endmodule
+

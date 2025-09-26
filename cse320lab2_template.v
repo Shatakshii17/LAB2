@@ -349,6 +349,39 @@ module simpleDivider(clk100Mhz, slowClk, CLR);
     end
 endmodule
 
+//TestBench 2b
+		always @(*) begin
+    // Only consider CO (and saturation hold) while actively counting (not loading)
+    // counting = ENABLE & !LOAD
+    if ( (ENABLE & !LOAD) &&
+         ( ((Q2 == 4'd0) && (Q1 == 4'd0) && (UP == 1'b0)) ||
+           ((Q2 == 4'd9) && (Q1 == 4'd9) && (UP == 1'b1)) ) ) begin
+        ENABLE_OVERRIDE = 1'b0;   // stop at 00 or 99
+        CO = 1'b1;                // indicate saturation attempt
+    end else begin
+        ENABLE_OVERRIDE = 1'b1;
+        CO = 1'b0;
+    end
+
+    // Ones digit: count when enabled and not saturating, or load when ENABLE&LOAD
+    ENABLE_1 = (ENABLE & ENABLE_OVERRIDE) | (ENABLE & LOAD);
+
+    // Tens digit: load with ENABLE&LOAD, OR step only on a ones-roll event,
+    // and only when globally ENABLED and not saturating.
+    //  - UP: step tens when ones is 9 (will roll 9->0)
+    //  - DOWN: step tens when ones is 0 (will roll 0->9)
+    // IMPORTANT: include ENABLE in the roll term to avoid stepping while disabled.
+    ENABLE_2 = (ENABLE & LOAD) |
+               (ENABLE & ENABLE_OVERRIDE &
+                 ( (UP  && (Q1 == 4'd9)) ||
+                   (!UP && (Q1 == 4'd0)) ));
+
+    // Tens direction: same as UP (ENABLE_2 gating ensures it only applies on roll)
+    UP_2 = UP;
+end
+
+		
+
 //Problem 3
 module lab2bcd_1digit_top(D, ENABLE, LOAD, UP, CLK100MHZ, CLR, Q, CO);
     input [3:0] ???;
@@ -363,6 +396,7 @@ module lab2bcd_1digit_top(D, ENABLE, LOAD, UP, CLK100MHZ, CLR, Q, CO);
     simpleDivider clkdiv(???, CLK, CLR); //Read the simpleDivider module to see what it takes as an input
     lab2bcd_1digit BCD1(???);
 endmodule
+
 
 
 

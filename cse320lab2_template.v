@@ -186,13 +186,22 @@ module lab2bcd_1digit(D, ENABLE, LOAD, UP, CLK, CLR, Q, CO);
         //Asynchronous active-low clear
         if(~CLR)
         begin
-            CO = ???;
+            CO = 1'b0;
         end
         //Implement the behavioral requirements for CO here
         else if(ENABLE)
         begin
-            ???
+			if(UP && (Q == 4'd9))	// about to roll over 9->0
+				CO = 1'b1;
+			else if(!UP && (Q == 4'd0)) 	// about to roll over 0->9
+				CO = 1'b1;
+			else
+				CO = 1'b0;
         end
+		else
+		begin
+			CO = 1'b0;
+		end
     end
 endmodule
 
@@ -269,6 +278,7 @@ module lab2bcd_1digit_top(D, ENABLE, LOAD, UP, CLK100MHZ, CLR, Q, CO);
     simpleDivider clkdiv(???, CLK, CLR); //Read the simpleDivider module to see what it takes as an input
     lab2bcd_1digit BCD1(???);
 endmodule
+
 
 
 

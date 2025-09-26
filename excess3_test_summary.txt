@@ -1,0 +1,6 @@
+EXCESS-3 FSM TESTBENCH SUMMARY
+==============================
+Total Tests: 16
+Passed: 16
+Failed: 0
+Success Rate: 100.0%

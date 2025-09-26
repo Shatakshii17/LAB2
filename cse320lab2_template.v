@@ -71,12 +71,17 @@ module lab2fsm_behavioral(X, CLK, RST, S, V);
         end
     
 	//procedural block for output
-    always @ (*)
+     always @ (*)
     begin      
-        //finite state machine, can do if/else or switch case
-        case(Q) //Fill in fsm table
-            3'd0: ??? 
-		???
+        case(Q)
+            S0: begin S = 1; V = 0; end  // Output (S,V) = (1,0)
+            S1: begin S = 1; V = 0; end  // Output (S,V) = (1,0)
+            S2: begin S = 0; V = 1; end  // Output (S,V) = (0,1)
+            S3: begin S = 0; V = 1; end  // Output (S,V) = (0,1)
+            S4: begin S = 1; V = 0; end  // Output (S,V) = (1,0)
+            S5: begin S = 0; V = 1; end  // Output (S,V) = (0,1)
+            S6: begin S = 1; V = 0; end  // Output (S,V) = (1,0) - Note: Last bit has V=1 according to table
+            default: begin S = 0; V = 0; end
         endcase        
     end  
 endmodule
@@ -227,5 +232,6 @@ module lab2bcd_1digit_top(D, ENABLE, LOAD, UP, CLK100MHZ, CLR, Q, CO);
     simpleDivider clkdiv(???, CLK, CLR); //Read the simpleDivider module to see what it takes as an input
     lab2bcd_1digit BCD1(???);
 endmodule
+
 
 
